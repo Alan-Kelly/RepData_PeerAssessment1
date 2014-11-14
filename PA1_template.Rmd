@@ -38,7 +38,7 @@ g<-ggplot(stepsByDay, aes(date,totalsteps))
 g+geom_point() + geom_bar(stat="identity",colour="red",fill="green")+
   labs(title="Total Steps per Day")+
   theme(axis.text.x=element_text(angle=-90))+
-  geom_line(aes(date,Mean),colour="blue", legend="Mean")
+  geom_line(aes(date,Mean,colour="Mean"))
 ```
 
 The following is a  time series plot of the 5-minute interval (x-axis) and the average number of 
@@ -73,8 +73,7 @@ g<-ggplot(stepsByDay, aes(date,totalsteps))
 g+geom_point() + geom_bar(stat="identity",colour="red",fill="green")+
   labs(title="Total Steps per Day")+
   theme(axis.text.x=element_text(angle=-90))+
-  geom_line(aes(date,mean(totalsteps)),colour="red")+
-  geom_line(aes(date,median(totalsteps)),colour="blue")
+  geom_line(aes(date,Mean,colour="Mean"))
 ```
 
 The new mean value of total number of steps taken per day is `r Mean`. This is identical to the previous value (to 3 decimal places). The new median value is now equal to the mean. Hence imputing the NAs has resulted in the median value converging to the mean.
