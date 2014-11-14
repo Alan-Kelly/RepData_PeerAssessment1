@@ -11,13 +11,10 @@ Below is a histogram of the total number of steps taken each day. The horizontal
 
 The mean and median values are very close so you cannot differentiate on the graph.
 
-```{r libraries,echo=FALSE,results="hide",message=F, warning=F}
-library(ggplot2)
-library(lubridate)
-library(dplyr)
-```
 
-```{r readdata }
+
+
+```r
 data<-read.csv("activity.csv")
 data$date<-ymd(data$date)
 data$interval<-as.numeric(as.factor(data$interval))
@@ -26,14 +23,13 @@ stepsByDay <- data %>%
   summarise(totalsteps = sum(steps))
 Mean<-mean(stepsByDay$totalsteps,na.rm=TRUE)
 Median<-median(stepsByDay$totalsteps,na.rm=TRUE)
-
 ```
-The mean value of total number of steps taken per is `r Mean`.  
-The median value of total number of steps taken per is `r Median`.
+The mean value of total number of steps taken per is 1.0766189 &times; 10<sup>4</sup>.  
+The median value of total number of steps taken per is 10765.
 
 
-```{r TotalSteps, fig.width=7, fig.height=6, warning=F}
 
+```r
 g<-ggplot(stepsByDay, aes(date,totalsteps)) 
 g+geom_point() + geom_bar(stat="identity",colour="red",fill="green")+
   labs(title="Total Steps per Day")+
@@ -41,9 +37,12 @@ g+geom_point() + geom_bar(stat="identity",colour="red",fill="green")+
   geom_line(aes(date,Mean,colour="Mean"))
 ```
 
+![plot of chunk TotalSteps](figure/TotalSteps-1.png) 
+
 The following is a  time series plot of the 5-minute interval (x-axis) and the average number of 
 steps taken, averaged across all days (y-axis)
-```{r Averagesteps, fig.width=7, fig.height=6}
+
+```r
 avgByInt <- data %>%
   group_by(interval) %>%
   summarise(avgsteps = mean(steps,na.rm=TRUE))
@@ -51,17 +50,31 @@ g<-ggplot(avgByInt, aes(interval,avgsteps))
 g+geom_line()+labs(title="Average Steps per 5 minute interval")
 ```
 
+![plot of chunk Averagesteps](figure/Averagesteps-1.png) 
+
 The maximum number of steps and the corresponding 5-minute interval is shown below.
-```{r Maxsteps-Interval }
+
+```r
 avgByInt[which.max(avgByInt$avgsteps),]
+```
+
+```
+## Source: local data frame [1 x 2]
+## 
+##     interval avgsteps
+## 104      104 206.1698
+```
+
+```r
 NArows<-sum(is.na(data$steps))
 ```
 ## Handling Missing Values
 The only variable with missing value is "steps".
-The total number of missing values in the dataset is `r NArows`
+The total number of missing values in the dataset is 2304
 
 The missing values in the dataset have been replaced by the mean of total steps for that 5-minute interval across all days.  
-```{r ToatalStepsNAsremoved }
+
+```r
 data2<-data
 data2$steps[is.na(data2$steps)]<-avgByInt$avgsteps
 stepsByDay <- data2 %>%
@@ -76,11 +89,14 @@ g+geom_point() + geom_bar(stat="identity",colour="red",fill="green")+
   geom_line(aes(date,Mean,colour="Mean"))
 ```
 
-The new mean value of total number of steps taken per day is `r Mean`. This is identical to the previous value (to 3 decimal places). The new median value is now equal to the mean. Hence imputing the NAs has resulted in the median value converging to the mean.
+![plot of chunk ToatalStepsNAsremoved](figure/ToatalStepsNAsremoved-1.png) 
+
+The new mean value of total number of steps taken per day is 1.0766189 &times; 10<sup>4</sup>. This is identical to the previous value (to 3 decimal places). The new median value is now equal to the mean. Hence imputing the NAs has resulted in the median value converging to the mean.
 
 ## Differences in activity patterns between weekdays and weekends
 The following adds a new variable in the dataset with two values - "weekday" and "weekend" indicating whether a given date is a week day or weekend day.  
-```{r byweekday }
+
+```r
 data2$day<-weekdays(data2$date)
 days<-data.frame(day=c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"),cat=c("weekday","weekday","weekday","weekday","weekday","weekend","weekend"))
 data2<-merge(data2,days)
@@ -90,10 +106,13 @@ avgByInt <- data2 %>%
 ```
 The following creates a panel plot containing a time series plot of the 5-minute interval (x-axis)
 and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
-```{r plotweekday-weekend }
+
+```r
 g<-ggplot(avgByInt, aes(interval,avgsteps))
 g+geom_line()+labs(title="Average Steps per 5 minute interval")+
   facet_grid(cat ~ .)
 ```
+
+![plot of chunk plotweekday-weekend](figure/plotweekday-weekend-1.png) 
 
 
